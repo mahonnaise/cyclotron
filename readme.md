@@ -1,4 +1,4 @@
-# jquery.cyclotron.js
+# jquery.cyclotron.js ([Demo](http://kaioa.com/k/test/cyclotron/index.html))
 
 ## 1. You need some element with a background image. E.g.:
 
