@@ -2,13 +2,17 @@
 
 1. You need some element with a background image. E.g.
 
-	<div class="cycle" style="background:url(panorama.jpg);height:512px"></div>
+```html
+<div class="cycle" style="background:url(panorama.jpg);height:512px"></div>
+```
 
 2. Cyclotronify:
 
-	$(document).ready(function ($) {
-		$('.cycle').cyclotron();
-	});
+```javascript
+$(document).ready(function ($) {
+	$('.cycle').cyclotron();
+});
+```
 
 3. Options:
 
