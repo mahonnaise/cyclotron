@@ -8,15 +8,15 @@
 			var container, sx, dx = 0, armed, offset = 0, tick, prev, h = [];
 			container = $(this);
 
-			container.mousedown(function (e) {
-				sx = e.pageX - offset;
+			container.bind('touchstart mousedown', function (e) {
+				var px = (e.pageX>0?e.pageX:e.originalEvent.touches[0].pageX);
+				sx = px - offset;
 				armed = true;
 				e.preventDefault();
 			});
-			container.mousemove(function (e) {
-				var px;
+			container.bind('touchmove mousemove', function (e) {
 				if (armed) {
-					px = e.pageX;
+					var px = (e.pageX>0?e.pageX:e.originalEvent.touches[0].pageX);
 					if (prev === undefined) {
 						prev = px;
 					}
@@ -31,7 +31,7 @@
 					prev = px;
 				}
 			});
-			container.bind('mouseleave mouseup', function () {
+			container.bind('mouseleave mouseup touchend', function () {
 				if (armed) {
 					var i, len = h.length, v = h[len - 1];
 					for (i = 0; i < len; i++) {
