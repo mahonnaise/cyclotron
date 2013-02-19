@@ -6,7 +6,8 @@
 			var settings = $.extend({
 				dampingFactor: 0.93,
 				historySize: 5,
-				autorotation: 0
+				autorotation: 0,
+				continuous: 1
 			}, options);
 			// check for dampingFactor in range
 			if((settings.dampingFactor>1 || settings.dampingFactor<0)) {
@@ -14,6 +15,20 @@
 					console.log('dampingFactor out of range '+settings.dampingFactor);
 				}
 				settings.dampingFactor=0.93;
+			}
+			// check for nonContinuous class to set continuous to 0 if existing
+			if(settings.continuous===1 && container.hasClass('nonContinuous')) {
+				settings.continuous=0;
+			}
+			// check size of image if not continuous image
+			if(settings.continuous===0) {
+				var image_url = container.css('background-image');
+				image_url = image_url.substr(5, image_url.length - 7);
+				var image = new Image();
+				$(image).load(function () {
+					max=image.width - container.width();
+				});
+				image.src = image_url;
 			}
 			// set autorotation
 			if(settings.autorotation!=0) {
@@ -29,7 +44,7 @@
 			container.bind('touchmove mousemove', function (e) {
 				if (armed) {
 					var px = (e.pageX>0?e.pageX:e.originalEvent.touches[0].pageX);
-					if (prev === undefined) {
+					if (typeof prev==='undefined') {
 						prev = px;
 					}
 					offset = px - sx;
@@ -37,16 +52,15 @@
 						h.shift();
 					}
 					h.push(prev - px);
-
+					checkOffset();
 					container.css('background-position', offset);
-
 					prev = px;
 				}
 			});
 			container.bind('mouseleave mouseup touchend', function () {
 				if (armed) {
-					var i, len = h.length, v = h[len - 1];
-					for (i = 0; i < len; i++) {
+					var len = h.length, v = h[len - 1];
+					for (var i = 0; i < len; i++) {
 						v = (v * len + (h[i])) / (len + 1);
 					}
 					dx = v;
@@ -57,6 +71,7 @@
 				if (!armed && dx) {
 					dx *= settings.dampingFactor;
 					offset -= dx;
+					checkOffset();
 					container.css('background-position', offset);
 					if (Math.abs(dx) < 0.001) {
 						dx = 0;
@@ -64,6 +79,18 @@
 				}
 			};
 			setInterval(tick, 16);
+			function checkOffset() {
+				if(settings.continuous===0) {
+					if (-offset<min) {
+						dx=0;
+						offset=-min;
+					}
+					if (-offset>max) {
+						dx=0;
+						offset=-max;
+					}
+				}
+			}
 		});
 	};
 }(jQuery));
