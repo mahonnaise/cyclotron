@@ -7,7 +7,13 @@
 				dampingFactor: 0.93,
 				historySize: 5
 			}, options);
-
+			// check for dampingFactor in range
+			if((settings.dampingFactor>1 || settings.dampingFactor<0)) {
+				if (typeof console==='object') {
+					console.log('dampingFactor out of range '+settings.dampingFactor);
+				}
+				settings.dampingFactor=0.93;
+			}
 			container.bind('touchstart mousedown', function (e) {
 				var px = (e.pageX>0?e.pageX:e.originalEvent.touches[0].pageX);
 				sx = px - offset;
