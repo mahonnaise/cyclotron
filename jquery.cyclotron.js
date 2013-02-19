@@ -67,3 +67,6 @@
 		});
 	};
 }(jQuery));
+$(document).ready(function() {
+	$('.cyclotron').cyclotron();
+});
