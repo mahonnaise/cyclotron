@@ -5,7 +5,8 @@
 			container = $(this);
 			var settings = $.extend({
 				dampingFactor: 0.93,
-				historySize: 5
+				historySize: 5,
+				autorotation: 0
 			}, options);
 			// check for dampingFactor in range
 			if((settings.dampingFactor>1 || settings.dampingFactor<0)) {
@@ -13,6 +14,11 @@
 					console.log('dampingFactor out of range '+settings.dampingFactor);
 				}
 				settings.dampingFactor=0.93;
+			}
+			// set autorotation
+			if(settings.autorotation!=0) {
+				armed=false;
+				dx=settings.autorotation;
 			}
 			container.bind('touchstart mousedown', function (e) {
 				var px = (e.pageX>0?e.pageX:e.originalEvent.touches[0].pageX);
