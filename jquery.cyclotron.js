@@ -1,12 +1,12 @@
 (function ($) {
 	$.fn.cyclotron = function (options) {
-		var settings = $.extend({
-			dampingFactor: 0.93,
-			historySize: 5
-		}, options);
 		return this.each(function () {
-			var container, sx, dx = 0, armed, offset = 0, tick, prev, h = [];
+			var container, sx, dx = 0, armed, offset = 0, tick, prev, h = [], max=0, min=0;
 			container = $(this);
+			var settings = $.extend({
+				dampingFactor: 0.93,
+				historySize: 5
+			}, options);
 
 			container.bind('touchstart mousedown', function (e) {
 				var px = (e.pageX>0?e.pageX:e.originalEvent.touches[0].pageX);
