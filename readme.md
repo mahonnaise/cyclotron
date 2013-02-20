@@ -1,5 +1,7 @@
 # jquery.cyclotron.js
 
+You can see how it works at the [demo page](http://quelbs.github.com/cyclotron/).
+
 ## Option 1: Create an element with a background image and class cyclotron.
 
 ```html
