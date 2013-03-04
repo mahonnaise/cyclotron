@@ -22,8 +22,7 @@
 			}
 			// check size of image if not continuous image
 			if(settings.continuous===0) {
-				var image_url = container.css('background-image').replace(/^url\(["']?/, '').replace(/["']?\)$/, '');;
-				image_url = image_url.substr(5, image_url.length - 7);
+				var image_url = container.css('background-image').replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
 				var image = new Image();
 				$(image).load(function () {
 					max=image.width - container.width();
