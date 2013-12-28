@@ -56,8 +56,8 @@
 			});
 			$container.on('mouseleave mouseup touchend touchcancel', function() {
 				if (armed) {
-					var i, len = h.length,
-						v = h[len - 1];
+					var i, len = h.length;
+					var v = h[len - 1];
 					for (i = 0; i < len; i++) {
 						v = (v * len + (h[i])) / (len + 1);
 					}
