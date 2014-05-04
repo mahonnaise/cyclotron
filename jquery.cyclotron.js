@@ -77,7 +77,22 @@
 					}
 				}
 			};
-			setInterval(tick, 16);
+			// shim layer with setTimeout fallback
+			window.requestAnimFrame = (function () {
+					return window.requestAnimationFrame ||
+					window.webkitRequestAnimationFrame ||
+					window.mozRequestAnimationFrame ||
+					window.oRequestAnimationFrame ||
+					window.msRequestAnimationFrame ||
+					function (callback) {
+						window.setTimeout(callback, 16.66666666666667);
+					};
+			})();
+			// the equivalent of setInterval(tick, 16);
+			(function animloop(){
+				requestAnimFrame(animloop);
+				tick();
+			})();
 			function checkOffset() {
 				if(settings.continuous===0) {
 					if (-offset<min) {
