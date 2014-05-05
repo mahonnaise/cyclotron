@@ -85,7 +85,8 @@
 					window.oRequestAnimationFrame ||
 					window.msRequestAnimationFrame ||
 					function (callback) {
-						window.setTimeout(callback, 16.66666666666667);
+						// use 16.666 ms for better performance in older browsers
+						window.setTimeout(callback, 100/6);
 					};
 			})();
 			// the equivalent of setInterval(tick, 16);
