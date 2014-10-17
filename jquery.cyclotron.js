@@ -65,7 +65,7 @@
 					offset -= dx;
 					if (settings.lock == true) {
 						offset > 0 ? offset = 0 : "";
-						offset < (1-maxScroll) ? offset = (1-maxScroll) : "";
+						offset < (0-maxScroll) ? offset = (0-maxScroll) : "";
 					}
 					container.css('background-position', offset);
 					if (Math.abs(dx) < 0.001) {
