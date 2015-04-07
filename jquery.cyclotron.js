@@ -2,11 +2,25 @@
 	$.fn.cyclotron = function (options) {
 		var settings = $.extend({
 			dampingFactor: 0.93,
-			historySize: 5
+			historySize: 5,
+			lock: false
 		}, options);
 		return this.each(function () {
-			var container, sx, dx = 0, armed, offset = 0, tick, prev, h = [];
+			var container, sx, dx = 0, armed, offset = 0, tick, prev, h = [], maxScroll, windowWidth;
 			container = $(this);
+			windowWidth = $(window).width();
+
+			if (settings.lock == true) {
+				container.css({
+					'background-position': '0px 50%',
+					'background-repeat': 'no-repeat'
+				});
+				var img = new Image();
+				img.src = container.css('background-image').replace(/url\(|\)$/ig, "");
+				$(img).load(function (){
+					maxScroll = img.width - windowWidth
+				})
+			}
 
 			container.mousedown(function (e) {
 				sx = e.pageX - offset;
@@ -26,6 +40,10 @@
 					}
 					h.push(prev - px);
 
+					if (settings.lock == true) {
+						offset > 0 ? offset = 0 : "";
+						offset < (1-maxScroll) ? offset = (1-maxScroll) : "";
+					}
 					container.css('background-position', offset);
 
 					prev = px;
@@ -45,6 +63,10 @@
 				if (!armed && dx) {
 					dx *= settings.dampingFactor;
 					offset -= dx;
+					if (settings.lock == true) {
+						offset > 0 ? offset = 0 : "";
+						offset < (0-maxScroll) ? offset = (0-maxScroll) : "";
+					}
 					container.css('background-position', offset);
 					if (Math.abs(dx) < 0.001) {
 						dx = 0;
