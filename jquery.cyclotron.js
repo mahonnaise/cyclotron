@@ -67,7 +67,7 @@
 				armed = false;
 			});
 			tick = function () {
-				if (!armed && dx) {
+				if (!armed && dx!==0) {
 					dx *= settings.dampingFactor;
 					offset -= dx;
 					checkOffset();
@@ -97,11 +97,11 @@
 			function checkOffset() {
 				if(settings.continuous===0) {
 					if (-offset<min) {
-						dx=0;
+						dx=(settings.autorotation===1?-dx:0);
 						offset=-min;
 					}
 					if (-offset>max) {
-						dx=0;
+						dx=(settings.autorotation===1?-dx:0);
 						offset=-max;
 					}
 				}
