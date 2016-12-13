@@ -1,9 +1,8 @@
-(function ($) {
-	$.fn.cyclotron = function (options) {
+(function (jQuery) {
+	jQuery.fn.cyclotron = function (options) {
 		return this.each(function () {
-			var container, sx, dx = 0, armed, offset = 0, tick, prev, h = [], max=0, min=0;
-			container = $(this);
-			var settings = $.extend({
+			var container=jQuery(this), sx, dx = 0, armed, offset = 0, tick, prev, h = [], max=0, min=0;
+			var settings = jQuery.extend({
 				dampingFactor: 0.93,
 				historySize: 5,
 				autorotation: 0,
@@ -22,20 +21,89 @@
 			}
 			// check size of image if not continuous image
 			if(settings.continuous===0) {
-				max = getBackgroundWidth(container) - container.width();
+				var image = new Image(),
+						src=container.css('background-image').replace(/url\((['"])?(.*?)\1\)/gi, '$2'),
+						cssSize = container.css('background-size').split(' '),
+						elemDim = [container.width(),container.height()],
+						imagesize = [],
+						ratio=1;
+				// Load the image with the extracted URL.
+				// Should be in cache already.
+				jQuery(image).one('load',function () {
+					// Determine the 'ratio'
+					ratio = image.width > image.height ? image.width / image.height : image.height / image.width;
+					// First property is width. It is always set to something.
+					imagesize[0] = cssSize[0];
+					// If height not set, set it to auto
+					imagesize[1] = cssSize.length > 1 ? cssSize[1] : 'auto';
+					// If both values are set to auto, return image's 
+					// original width and height
+					if(imagesize[0] === 'auto' && imagesize[1] === 'auto') {
+							imagesize[0] = image.width;
+					} else {
+						if(cssSize[0] === 'cover') {
+							if(elemDim[0] > elemDim[1]) {
+								// Elem's ratio greater than or equal to img ratio
+								if(elemDim[0] / elemDim[1] >= ratio) {
+									return elemDim[0];
+								} else {
+									imagesize[0] = 'auto';
+									imagesize[1] = elemDim[1];
+								}
+							} else {
+								imagesize[0] = 'auto';
+								imagesize[1] = elemDim[1];
+							}
+						} else if(cssSize[0] === 'contain') {
+							// Width is less than height
+							if(elemDim[0] < elemDim[1]) {
+								imagesize[0] = elemDim[0];
+							} else {
+								// elem's ratio is greater than or equal to img ratio
+								if(elemDim[0] / elemDim[1] >= ratio) {
+									imagesize[0] = 'auto';
+									imagesize[1] = elemDim[1];
+								} else {
+									imagesize[1] = 'auto';
+									imagesize[0] = elemDim[0];
+								}
+							}
+						} else {
+							// If not 'cover' or 'contain', loop through the values
+							for(var i = cssSize.length; i--;) {
+								// Check if values are in pixels or in percentage
+								if (cssSize[i].indexOf('px') > -1) {
+									// If in pixels, just remove the 'px' to get the value
+									imagesize[i] = cssSize[i].replace('px', '');
+								} else if (cssSize[i].indexOf('%') > -1) {
+									// If percentage, get percentage of elem's dimension
+									// and assign it to the computed dimension
+									imagesize[i] = elemDim[i] * (cssSize[i].replace('%', '') / 100);
+								}
+							}
+						}
+						// Depending on whether width or height is auto,
+						// calculate the value in pixels of auto.
+						// ratio in here is just getting proportions.
+						ratio = imagesize[0] === 'auto' ? image.height / imagesize[1] : image.width / imagesize[0];
+						imagesize[0] = (imagesize[0] === 'auto' ? image.width / ratio : imagesize[0]);
+					}
+					max=imagesize[0]-container.width();
+				});
+				image.src = src;
 			}
 			// set autorotation
 			if(settings.autorotation!=0) {
 				armed=false;
 				dx=settings.autorotation;
 			}
-			container.bind('touchstart mousedown', function (e) {
+			container.on('touchstart mousedown', function (e) {
 				var px = (e.pageX>0?e.pageX:e.originalEvent.touches[0].pageX);
 				sx = px - offset;
 				armed = true;
 				e.preventDefault();
 			});
-			container.bind('touchmove mousemove', function (e) {
+			container.on('touchmove mousemove', function (e) {
 				if (armed) {
 					var px = (e.pageX>0?e.pageX:e.originalEvent.touches[0].pageX);
 					if (typeof prev==='undefined') {
@@ -51,7 +119,7 @@
 					prev = px;
 				}
 			});
-			container.bind('mouseleave mouseup touchend', function () {
+			container.on('mouseleave mouseup touchend', function () {
 				if (armed) {
 					var len = h.length, v = h[len - 1];
 					for (var i = 0; i < len; i++) {
@@ -89,7 +157,7 @@
 				requestAnimFrame(animloop);
 				tick();
 			})();
-			function checkOffset() {
+			checkOffset = function () {
 				if(settings.continuous===0) {
 					if (-offset<min) {
 						dx=(settings.autorotation===1?-dx:0);
@@ -101,79 +169,9 @@
 					}
 				}
 			}
-			function getBackgroundWidth($elem) {
-				var image = new Image(),
-					src=$elem.css('background-image').replace(/url\((['"])?(.*?)\1\)/gi, '$2'),
-					cssSize = $elem.css('background-size').split(' '),
-					elemDim = [$elem.width(),$elem.height()],
-					imagesize = [],
-					ratio;
-
-				// Load the image with the extracted URL.
-				// Should be in cache already.
-				image.src = src;
-				// Determine the 'ratio'
-				ratio = image.width > image.height ? image.width / image.height : image.height / image.width;
-				// First property is width. It is always set to something.
-				imagesize[0] = cssSize[0];
-				// If height not set, set it to auto
-				imagesize[1] = cssSize.length > 1 ? cssSize[1] : 'auto';
-				// If both values are set to auto, return image's 
-				// original width and height
-				if(imagesize[0] === 'auto' && imagesize[1] === 'auto') {
-						return image.width;
-				} else {
-					if(cssSize[0] === 'cover') {
-						if(elemDim[0] > elemDim[1]) {
-							// Elem's ratio greater than or equal to img ratio
-							if(elemDim[0] / elemDim[1] >= ratio) {
-								return elemDim[0];
-							} else {
-								imagesize[0] = 'auto';
-								imagesize[1] = elemDim[1];
-							}
-						} else {
-							imagesize[0] = 'auto';
-							imagesize[1] = elemDim[1];
-						}
-					} else if(cssSize[0] === 'contain') {
-						// Width is less than height
-						if(elemDim[0] < elemDim[1]) {
-							return elemDim[0];
-						} else {
-							// elem's ratio is greater than or equal to img ratio
-							if(elemDim[0] / elemDim[1] >= ratio) {
-								imagesize[0] = 'auto';
-								imagesize[1] = elemDim[1];
-							} else {
-								imagesize[1] = 'auto';
-								imagesize[0] = elemDim[0];
-							}
-						}
-					} else {
-						// If not 'cover' or 'contain', loop through the values
-						for(var i = cssSize.length; i--;) {
-							// Check if values are in pixels or in percentage
-							if (cssSize[i].indexOf('px') > -1) {
-								// If in pixels, just remove the 'px' to get the value
-								imagesize[i] = cssSize[i].replace('px', '');
-							} else if (cssSize[i].indexOf('%') > -1) {
-								// If percentage, get percentage of elem's dimension
-								// and assign it to the computed dimension
-								imagesize[i] = elemDim[i] * (cssSize[i].replace('%', '') / 100);
-							}
-						}
-					}
-					// Depending on whether width or height is auto,
-					// calculate the value in pixels of auto.
-					// ratio in here is just getting proportions.
-					ratio = imagesize[0] === 'auto' ? image.height / imagesize[1] : image.width / imagesize[0];
-					return (imagesize[0] === 'auto' ? image.width / ratio : imagesize[0]);
-				}
-			}
 		});
 	};
 }(jQuery));
 jQuery(document).ready(function(){
-	$('.cyclotron').cyclotron();
+	jQuery('.cyclotron').cyclotron();
 });
