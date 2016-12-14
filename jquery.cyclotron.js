@@ -8,6 +8,29 @@
 				autorotation: 0,
 				continuous: 1
 			}, options);
+			var checkOffset = function () {
+				if(settings.continuous===0) {
+					if (-offset<min) {
+						dx=(settings.autorotation===1?-dx:0);
+						offset=-min;
+					}
+					if (-offset>max) {
+						dx=(settings.autorotation===1?-dx:0);
+						offset=-max;
+					}
+				}
+			}
+			var tick = function () {
+				if (!armed && dx!==0) {
+					dx *= settings.dampingFactor;
+					offset -= dx;
+					checkOffset();
+					container.css('background-position', offset);
+					if (Math.abs(dx) < 0.001) {
+						dx = 0;
+					}
+				}
+			};
 			// check for dampingFactor in range
 			if((settings.dampingFactor>1 || settings.dampingFactor<0)) {
 				if (typeof console==='object') {
@@ -129,17 +152,6 @@
 				}
 				armed = false;
 			});
-			tick = function () {
-				if (!armed && dx!==0) {
-					dx *= settings.dampingFactor;
-					offset -= dx;
-					checkOffset();
-					container.css('background-position', offset);
-					if (Math.abs(dx) < 0.001) {
-						dx = 0;
-					}
-				}
-			};
 			// shim layer with setTimeout fallback
 			window.requestAnimFrame = (function () {
 					return window.requestAnimationFrame ||
@@ -157,18 +169,6 @@
 				requestAnimFrame(animloop);
 				tick();
 			})();
-			checkOffset = function () {
-				if(settings.continuous===0) {
-					if (-offset<min) {
-						dx=(settings.autorotation===1?-dx:0);
-						offset=-min;
-					}
-					if (-offset>max) {
-						dx=(settings.autorotation===1?-dx:0);
-						offset=-max;
-					}
-				}
-			}
 		});
 	};
 }(jQuery));
