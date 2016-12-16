@@ -1,0 +1,11 @@
+!function(o){o.fn.cyclotron=function(t){return this.each(function(){var n,i,e,a,u=o(this),r=0,c=0,s=[],h=0,d=0,g=o.extend({dampingFactor:.93,historySize:5,autorotation:0,continuous:1},t),m=function(){0===g.continuous&&(d>-c&&(r=1===g.autorotation?-r:0,c=-d),-c>h&&(r=1===g.autorotation?-r:0,c=-h))},e=function(){i||0===r||(r*=g.dampingFactor,c-=r,m(),u.css("background-position",c),Math.abs(r)<.001&&(r=0))}
+if((g.dampingFactor>1||g.dampingFactor<0)&&("object"==typeof console&&console.log("dampingFactor out of range "+g.dampingFactor),g.dampingFactor=.93),1===g.continuous&&u.hasClass("nonContinuous")&&(g.continuous=0),0===g.continuous){var f=new Image,l=u.css("background-image").replace(/url\((['"])?(.*?)\1\)/gi,"$2"),p=u.css("background-size").split(" "),w=[u.width(),u.height()],v=[],F=1
+o(f).one("load",function(){if(F=f.width>f.height?f.width/f.height:f.height/f.width,v[0]=p[0],v[1]=p.length>1?p[1]:"auto","auto"===v[0]&&"auto"===v[1])v[0]=f.width
+else{if("cover"===p[0])if(w[0]>w[1]){if(w[0]/w[1]>=F)return w[0]
+v[0]="auto",v[1]=w[1]}else v[0]="auto",v[1]=w[1]
+else if("contain"===p[0])w[0]<w[1]?v[0]=w[0]:w[0]/w[1]>=F?(v[0]="auto",v[1]=w[1]):(v[1]="auto",v[0]=w[0])
+else for(var o=p.length;o--;)p[o].indexOf("px")>-1?v[o]=p[o].replace("px",""):p[o].indexOf("%")>-1&&(v[o]=w[o]*(p[o].replace("%","")/100))
+F="auto"===v[0]?f.height/v[1]:f.width/v[0],v[0]="auto"===v[0]?f.width/F:v[0]}h=v[0]-u.width()}),f.src=l}0!=g.autorotation&&(i=!1,r=g.autorotation),u.on("touchstart mousedown",function(o){var t=o.pageX>0?o.pageX:o.originalEvent.touches[0].pageX
+n=t-c,i=!0,o.preventDefault()}),u.on("touchmove mousemove",function(o){if(i){var t=o.pageX>0?o.pageX:o.originalEvent.touches[0].pageX
+void 0===a&&(a=t),c=t-n,s.length>g.historySize&&s.shift(),s.push(a-t),m(),u.css("background-position",c),a=t}}),u.on("mouseleave mouseup touchend",function(){if(i){for(var o=s.length,t=s[o-1],n=0;o>n;n++)t=(t*o+s[n])/(o+1)
+r=t}i=!1}),window.requestAnimFrame=function(){return window.requestAnimationFrame||window.webkitRequestAnimationFrame||window.mozRequestAnimationFrame||window.oRequestAnimationFrame||window.msRequestAnimationFrame||function(o){window.setTimeout(o,100/6)}}(),function y(){requestAnimFrame(y),e()}()})}}(jQuery),jQuery(document).ready(function(){jQuery(".cyclotron").cyclotron()})
